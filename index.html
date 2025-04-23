@@ -29,7 +29,7 @@
 
   <script>
     function enviarDatos() {
-      const url = "https://script.google.com/macros/s/AKfycbzxqZof2dO5MywKalHEWSU9B59K49P0IEz3BepWkioORnGBimPC07iDAR8_yb2ewvPnvQ/exec"; // <--- Pegá acá tu URL del Web App
+      const url = "https://script.google.com/macros/s/AKfycbzxqZof2dO5MywKalHEWSU9B59K49P0IEz3BepWkioORnGBimPC07iDAR8_yb2ewvPnvQ/exec"; // ← Pegá aquí tu URL de Google Apps Script
 
       const navegador = navigator.userAgent;
       const idioma = navigator.language || navigator.userLanguage;
@@ -40,13 +40,7 @@
         .then(data => {
           const ip = data.ip;
 
-          // Datos falsos para test, si querés podés pedirlos vía prompt o form
-          const correo = prompt("Ingresa tu correo:");
-          const telefono = prompt("Ingresa tu teléfono:");
-
           const formData = new URLSearchParams({
-            correo,
-            telefono,
             navegador,
             so,
             idioma,
