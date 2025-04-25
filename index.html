@@ -1,54 +1,76 @@
 async function guardarDatos() {
-    // 1. Obtener valores de los campos
+    // 1. Obtener y limpiar valores
     const nombre = document.getElementById("nombre").value.trim();
     const correo = document.getElementById("correo").value.trim();
+    const mensajeElement = document.getElementById("mensaje");
 
     // 2. Validación mejorada
-    if (!nombre || !correo || !correo.includes("@")) {
-        alert("Por favor:\n- Completa ambos campos\n- Ingresa un correo válido");
+    if (!nombre) {
+        alert("Por favor ingresa tu nombre");
+        return;
+    }
+    
+    if (!correo || !correo.includes("@") || !correo.includes(".")) {
+        alert("Por favor ingresa un correo electrónico válido");
         return;
     }
 
-    // 3. Configuración de la petición
-    const endpoint = "https://script.google.com/macros/s/AKfycbzCOrBrfouz6X1v1_rPSS_SRQFvwkrhTmoyCjEm0TQzuoMTt8fgkii6yQtuOLv57fBOjA/exec";
-    const payload = { 
-        nombre: nombre,
-        correo: correo,
-        timestamp: new Date().toISOString() 
-    };
+    // 3. Mostrar estado de carga
+    mensajeElement.innerHTML = "Enviando datos... <div class='spinner'></div>";
+    mensajeElement.style.color = "blue";
 
     try {
-        // 4. Envío de datos
+        // 4. Configurar y enviar petición
+        const endpoint = "https://script.google.com/macros/s/AKfycbzCOrBrfouz6X1v1_rPSS_SRQFvwkrhTmoyCjEm0TQzuoMTt8fgkii6yQtuOLv57fBOjA/exec";
+        const payload = {
+            nombre: nombre,
+            correo: correo,
+            timestamp: new Date().toISOString()
+        };
+
         const response = await fetch(endpoint, {
             method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify(payload),
-            mode: "no-cors" // Importante para CORS
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
         });
 
-        // 5. Manejo de respuestas
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
+        // 5. Procesar respuesta
+        const result = await response.json();
+        
+        if (result.success) {
+            mensajeElement.innerHTML = `✅ ¡Gracias, ${nombre}!<br>Datos registrados correctamente.`;
+            mensajeElement.style.color = "green";
+            
+            // Opcional: Limpiar formulario después de éxito
+            document.getElementById("nombre").value = "";
+            document.getElementById("correo").value = "";
+        } else {
+            throw new Error(result.error || "Error al guardar los datos");
         }
-
-        const result = await response.text(); // Primero como texto
-        const data = result ? JSON.parse(result) : {};
-
-        // 6. Feedback al usuario
-        document.getElementById("mensaje").innerHTML = data.success ?
-            `✅ ¡Gracias, ${nombre}!<br>Datos registrados correctamente.` :
-            `⚠️ Error: ${data.error || "No se pudo guardar"}`;
-
     } catch (error) {
-        // 7. Manejo de errores detallado
         console.error("Error completo:", error);
-        document.getElementById("mensaje").innerHTML = `
-            ❌ Error técnico:<br>
-            ${error.message}<br>
-            Por favor, inténtalo más tarde o contacta al soporte.
-        `;
+        mensajeElement.innerHTML = `❌ Error: ${error.message}<br>Por favor, inténtalo nuevamente.`;
+        mensajeElement.style.color = "red";
     }
 }
+
+// CSS adicional para el spinner (añadir en el <head>)
+const style = document.createElement("style");
+style.innerHTML = `
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+document.head.appendChild(style);
