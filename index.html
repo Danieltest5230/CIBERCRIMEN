@@ -8,7 +8,7 @@ async function guardarDatos() {
     }
 
     try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzxqZof2dO5MywKalHEWSU9B59K49P0IEz3BepWkioORnGBimPC07iDAR8_yb2ewvPnvQ/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbzCOrBrfouz6X1v1_rPSS_SRQFvwkrhTmoyCjEm0TQzuoMTt8fgkii6yQtuOLv57fBOjA/exec", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ nombre, correo }),
