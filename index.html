@@ -1,29 +1,54 @@
 async function guardarDatos() {
-    const nombre = document.getElementById("nombre").value;
-    const correo = document.getElementById("correo").value;
+    // 1. Obtener valores de los campos
+    const nombre = document.getElementById("nombre").value.trim();
+    const correo = document.getElementById("correo").value.trim();
 
-    if (!nombre || !correo) {
-        alert("¡Oops! Completa ambos campos.");
+    // 2. Validación mejorada
+    if (!nombre || !correo || !correo.includes("@")) {
+        alert("Por favor:\n- Completa ambos campos\n- Ingresa un correo válido");
         return;
     }
 
+    // 3. Configuración de la petición
+    const endpoint = "https://script.google.com/macros/s/AKfycbzCOrBrfouz6X1v1_rPSS_SRQFvwkrhTmoyCjEm0TQzuoMTt8fgkii6yQtuOLv57fBOjA/exec";
+    const payload = { 
+        nombre: nombre,
+        correo: correo,
+        timestamp: new Date().toISOString() 
+    };
+
     try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzCOrBrfouz6X1v1_rPSS_SRQFvwkrhTmoyCjEm0TQzuoMTt8fgkii6yQtuOLv57fBOjA/exec", {
+        // 4. Envío de datos
+        const response = await fetch(endpoint, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre, correo }),
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(payload),
+            mode: "no-cors" // Importante para CORS
         });
-        const result = await response.json();
-        
-        if (result.success) {
-            document.getElementById("mensaje").innerHTML = 
-                `¡Gracias, ${nombre}!<br>Datos guardados en Google Sheets.`;
-        } else {
-            throw new Error(result.error || "Error desconocido");
+
+        // 5. Manejo de respuestas
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
         }
+
+        const result = await response.text(); // Primero como texto
+        const data = result ? JSON.parse(result) : {};
+
+        // 6. Feedback al usuario
+        document.getElementById("mensaje").innerHTML = data.success ?
+            `✅ ¡Gracias, ${nombre}!<br>Datos registrados correctamente.` :
+            `⚠️ Error: ${data.error || "No se pudo guardar"}`;
+
     } catch (error) {
-        document.getElementById("mensaje").innerHTML = 
-            `Hubo un error: ${error.message}<br>Por favor, recarga la página e intenta nuevamente.`;
-        console.error("Error:", error);
+        // 7. Manejo de errores detallado
+        console.error("Error completo:", error);
+        document.getElementById("mensaje").innerHTML = `
+            ❌ Error técnico:<br>
+            ${error.message}<br>
+            Por favor, inténtalo más tarde o contacta al soporte.
+        `;
     }
 }
