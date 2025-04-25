@@ -1,64 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Cibercrimen</title>
-  <link href="https://script.google.com/macros/s/AKfycby5NHrTaxUysuYZqfTI2cAg1hv3p8UUISGiJsCabn2gAuUbBO_rmklxTzpMQDFe0EcC/exec">
   <style>
     body {
-      margin: 0;
+      background-color: #111;
+      color: #fff;
       font-family: 'Roboto', sans-serif;
-      background: #0f0f0f;
-      color: #ffffff;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
+      margin: 0;
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: 2rem;
       margin-bottom: 1rem;
-      animation: fadeIn 2s ease;
-      text-align: center;
+      animation: fadeIn 2s ease-in-out;
     }
 
     .form-container {
-      background: #1e1e1e;
+      background: #1a1a1a;
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-      width: 100%;
-      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
     }
 
-    input[type="text"],
-    input[type="email"] {
+    input {
       width: 100%;
-      padding: 0.75rem;
-      margin: 0.5rem 0;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
       border: none;
-      border-radius: 8px;
       font-size: 1rem;
     }
 
     button {
-      width: 100%;
-      padding: 0.75rem;
-      margin-top: 1rem;
       background: #00ffaa;
       color: #000;
       font-weight: bold;
+      padding: 10px;
+      width: 100%;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background: #00cc88;
     }
 
     #mensaje {
@@ -68,7 +56,7 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
+      from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
@@ -79,8 +67,8 @@
 
   <div class="form-container">
     <form id="formulario">
-      <input type="text" id="nombre" name="nombre" placeholder="Nombre" required />
-      <input type="email" id="correo" name="correo" placeholder="Correo electrónico" required />
+      <input type="text" name="nombre" placeholder="Tu nombre" required>
+      <input type="email" name="correo" placeholder="Tu correo" required>
       <button type="submit">Ingresar</button>
     </form>
     <div id="mensaje"></div>
@@ -90,27 +78,27 @@
     document.getElementById("formulario").addEventListener("submit", async function(e) {
       e.preventDefault();
 
-      const formData = new FormData(this);
-      const nombre = formData.get("nombre");
-      const correo = formData.get("correo");
+      const form = new FormData(this);
+      const correo = form.get("correo");
+      const nombre = form.get("nombre");
 
       if (!correo || !correo.includes("@") || !nombre) {
-        document.getElementById("mensaje").innerText = "Por favor, completá nombre y un correo válido.";
+        document.getElementById("mensaje").innerText = "⚠️ Ingresá un nombre y correo válidos.";
         return;
       }
 
-      const endpoint = "https://script.google.com/macros/s/AKfycbzCOrBrfouz6X1v1_rPSS_SRQFvwkrhTmoyCjEm0TQzuoMTt8fgkii6yQtuOLv57fBOjA/exec";
-
       try {
-        const response = await fetch(endpoint, {
+        const response = await fetch("TU_URL_DEL_SCRIPT", {
           method: "POST",
-          body: formData
+          body: form
         });
 
-        const result = await response.text();
-        document.getElementById("mensaje").innerHTML = `<span style="color:#00ffaa;">${result}</span>`;
-      } catch (error) {
-        document.getElementById("mensaje").innerHTML = `<span style="color:red;">❌ Error técnico: ${error.message}</span>`;
+        const result = await response.json();
+        document.getElementById("mensaje").innerHTML = result.success
+          ? `<span style="color: #00ffaa;">${result.message}</span>`
+          : `<span style="color: red;">❌ ${result.error}</span>`;
+      } catch (err) {
+        document.getElementById("mensaje").innerHTML = `❌ Error de conexión: ${err.message}`;
       }
     });
   </script>
