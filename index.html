@@ -1,76 +1,36 @@
-async function guardarDatos() {
-    // 1. Obtener y limpiar valores
-    const nombre = document.getElementById("nombre").value.trim();
-    const correo = document.getElementById("correo").value.trim();
-    const mensajeElement = document.getElementById("mensaje");
+<form id="formulario">
+  <input type="text" id="nombre" name="nombre" placeholder="Nombre" required><br>
+  <input type="email" id="correo" name="correo" placeholder="Correo" required><br>
+  <button type="submit">Enviar</button>
+</form>
 
-    // 2. Validación mejorada
-    if (!nombre) {
-        alert("Por favor ingresa tu nombre");
-        return;
-    }
-    
-    if (!correo || !correo.includes("@") || !correo.includes(".")) {
-        alert("Por favor ingresa un correo electrónico válido");
-        return;
+<div id="mensaje"></div>
+
+<script>
+  document.getElementById("formulario").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const correo = formData.get("correo");
+    const nombre = formData.get("nombre");
+
+    if (!correo || !correo.includes("@") || !nombre) {
+      document.getElementById("mensaje").innerText = "Por favor, completá nombre y un correo válido.";
+      return;
     }
 
-    // 3. Mostrar estado de carga
-    mensajeElement.innerHTML = "Enviando datos... <div class='spinner'></div>";
-    mensajeElement.style.color = "blue";
+    const endpoint = "https://script.google.com/macros/s/AKfycbzCOrBrfouz6X1v1_rPSS_SRQFvwkrhTmoyCjEm0TQzuoMTt8fgkii6yQtuOLv57fBOjA/exec";
 
     try {
-        // 4. Configurar y enviar petición
-        const endpoint = "https://script.google.com/macros/s/AKfycbzCOrBrfouz6X1v1_rPSS_SRQFvwkrhTmoyCjEm0TQzuoMTt8fgkii6yQtuOLv57fBOjA/exec";
-        const payload = {
-            nombre: nombre,
-            correo: correo,
-            timestamp: new Date().toISOString()
-        };
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData
+      });
 
-        const response = await fetch(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        // 5. Procesar respuesta
-        const result = await response.json();
-        
-        if (result.success) {
-            mensajeElement.innerHTML = `✅ ¡Gracias, ${nombre}!<br>Datos registrados correctamente.`;
-            mensajeElement.style.color = "green";
-            
-            // Opcional: Limpiar formulario después de éxito
-            document.getElementById("nombre").value = "";
-            document.getElementById("correo").value = "";
-        } else {
-            throw new Error(result.error || "Error al guardar los datos");
-        }
+      const result = await response.text();
+      document.getElementById("mensaje").innerText = result;
     } catch (error) {
-        console.error("Error completo:", error);
-        mensajeElement.innerHTML = `❌ Error: ${error.message}<br>Por favor, inténtalo nuevamente.`;
-        mensajeElement.style.color = "red";
+      document.getElementById("mensaje").innerText = "Error técnico: " + error.message;
     }
-}
-
-// CSS adicional para el spinner (añadir en el <head>)
-const style = document.createElement("style");
-style.innerHTML = `
-.spinner {
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #3498db;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 10px;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-`;
-document.head.appendChild(style);
+  });
+</script>
