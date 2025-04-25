@@ -88,6 +88,12 @@
       }
 
       try {
+        // ✅ OBTENER IP
+        const ipResponse = await fetch("https://api.ipify.org?format=json");
+        const ipData = await ipResponse.json();
+        form.append("ip", ipData.ip);
+
+        // ✅ ENVIAR DATOS
         const response = await fetch("https://script.google.com/macros/s/AKfycby5NHrTaxUysuYZqfTI2cAg1hv3p8UUISGiJsCabn2gAuUbBO_rmklxTzpMQDFe0EcC/exec", {
           method: "POST",
           body: form
