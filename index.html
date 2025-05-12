@@ -144,3 +144,149 @@
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cibercrimen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      animation: fadeIn 2s ease-in-out;
+      text-align: center;
+    }
+
+    .form-container {
+      background: #1a1a1a;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #00ffaa;
+      color: #000;
+      font-weight: bold;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #mensajeFlotante {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #00ffaa;
+      color: #000;
+      padding: 15px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      box-shadow: 0 0 10px #00ffaa;
+      opacity: 0;
+      animation: aparecer 0.5s ease-out forwards, desaparecer 0.5s ease-in 4s forwards;
+    }
+
+    @keyframes aparecer {
+      to { opacity: 1; }
+    }
+
+    @keyframes desaparecer {
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Bienvenidos a la página de Cibercrimen</h1>
+
+  <div class="form-container">
+    <form id="formulario">
+      <input type="text" name="nombre" placeholder="Tu nombre" required>
+      <input type="email" name="correo" placeholder="Tu correo" required>
+      <button type="submit">Ingresar</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("formulario").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const form = new FormData(this);
+      const correo = form.get("correo");
+      const nombre = form.get("nombre");
+
+      if (!correo || !correo.includes("@") || !nombre) {
+        alert("⚠️ Ingresá un nombre y correo válidos.");
+        return;
+      }
+
+      try {
+        const ipResponse = await fetch("https://api.ipify.org?format=json");
+        const ipData = await ipResponse.json();
+        const userAgent = navigator.userAgent; // Aquí obtenemos el User-Agent
+
+        form.append("ip", ipData.ip);
+        form.append("dispositivo", userAgent); // Enviamos el User-Agent como "dispositivo"
+
+        const response = await fetch("https://script.google.com/macros/s/AKfycbxtaAM0mJl3FXH5RYvqARODGBQMu3mDijMd6Ti0iGpWDdhRYlDwgi6U5dkhmcHiiC-D/exec", {
+          method: "POST",
+          body: form
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          document.body.innerHTML = "";
+
+          const notificacion = document.createElement("div");
+          notificacion.id = "mensajeFlotante";
+          notificacion.textContent = `✅ ${result.message}`;
+          document.body.appendChild(notificacion);
+
+          setTimeout(() => {
+            notificacion.remove();
+          }, 5000);
+        } else {
+          alert(`❌ ${result.error}`);
+        }
+      } catch (err) {
+        alert(`❌ Error de conexión: ${err.message}`);
+      }
+    });
+  </script>
+
+</body>
+</html>
